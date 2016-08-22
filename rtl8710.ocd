@@ -202,10 +202,11 @@ proc rtl8710_flasher_verify_block {offset len} {
 	}
 }
 
-proc rtl8710_flasher_read_id {} {
+proc rtl8710_flash_read_id {} {
 	global rtl8710_flasher_buffer
 	global rtl8710_flasher_capacity
 	global rtl8710_flasher_command_read_id
+	rtl8710_flasher_init
 	mww [expr {$rtl8710_flasher_buffer + 0x04}] $rtl8710_flasher_command_read_id
 	mww [expr {$rtl8710_flasher_buffer + 0x08}] 0x00000000
 	mww [expr {$rtl8710_flasher_buffer + 0x00}] 0x00000001
@@ -217,18 +218,20 @@ proc rtl8710_flasher_read_id {} {
 	echo "manufacturer ID: $manufacturer_id, memory type: $memory_type, memory capacity: $memory_capacity byte(s)"
 }
 
-proc rtl8710_flasher_mass_erase {} {
+proc rtl8710_flash_mass_erase {} {
 	global rtl8710_flasher_buffer
 	global rtl8710_flasher_command_mass_erase
+	rtl8710_flasher_init
 	mww [expr {$rtl8710_flasher_buffer + 0x04}] $rtl8710_flasher_command_mass_erase
 	mww [expr {$rtl8710_flasher_buffer + 0x08}] 0x00000000
 	mww [expr {$rtl8710_flasher_buffer + 0x00}] 0x00000001
 	rtl8710_flasher_wait
 }
 
-proc rtl8710_flasher_sector_erase {offset} {
+proc rtl8710_flash_sector_erase {offset} {
 	global rtl8710_flasher_buffer
 	global rtl8710_flasher_command_sector_erase
+	rtl8710_flasher_init
 	mww [expr {$rtl8710_flasher_buffer + 0x04}] $rtl8710_flasher_command_sector_erase
 	mww [expr {$rtl8710_flasher_buffer + 0x08}] 0x00000000
 	mww [expr {$rtl8710_flasher_buffer + 0x10}] $offset
@@ -236,8 +239,9 @@ proc rtl8710_flasher_sector_erase {offset} {
 	rtl8710_flasher_wait
 }
 
-proc rtl8710_flasher_read {local_filename loc size} {
+proc rtl8710_flash_read {local_filename loc size} {
 	global rtl8710_flasher_buffer_size
+	rtl8710_flasher_init
 	for {set offset 0} {$offset < $size} {set offset [expr {$offset + $rtl8710_flasher_buffer_size}]} {
 		set len [expr {$size - $offset}]
 		if {[expr {$len > $rtl8710_flasher_buffer_size}]} {
@@ -250,12 +254,13 @@ proc rtl8710_flasher_read {local_filename loc size} {
 	}
 }
 
-proc rtl8710_flasher_write {local_filename loc} {
+proc rtl8710_flash_write {local_filename loc} {
 	global rtl8710_flasher_buffer_size
 	global rtl8710_flasher_sector_size
 	global rtl8710_flasher_auto_erase
 	global rtl8710_flasher_auto_verify
 	global rtl8710_flasher_auto_erase_sector
+	rtl8710_flasher_init
 	set sector 0
 	set size [file size $local_filename]
 	for {set offset 0} {$offset < $size} {set offset [expr {$offset + $rtl8710_flasher_buffer_size}]} {
@@ -284,8 +289,9 @@ proc rtl8710_flasher_write {local_filename loc} {
 	}
 }
 
-proc rtl8710_flasher_verify {local_filename loc} {
+proc rtl8710_flash_verify {local_filename loc} {
 	global rtl8710_flasher_buffer_size
+	rtl8710_flasher_init
 	set size [file size $local_filename]
 	for {set offset 0} {$offset < $size} {set offset [expr {$offset + $rtl8710_flasher_buffer_size}]} {
 		set len [expr {$size - $offset}]
@@ -299,7 +305,7 @@ proc rtl8710_flasher_verify {local_filename loc} {
 	}
 }
 
-proc rtl8710_auto_erase {on} {
+proc rtl8710_flash_auto_erase {on} {
 	global rtl8710_flasher_auto_erase
 	if {[expr {$on != 0}]} {
 		set rtl8710_flasher_auto_erase 1
@@ -310,7 +316,7 @@ proc rtl8710_auto_erase {on} {
 	}
 }
 
-proc rtl8710_auto_verify {on} {
+proc rtl8710_flash_auto_verify {on} {
 	global rtl8710_flasher_auto_verify
 	if {[expr {$on != 0}]} {
 		set rtl8710_flasher_auto_verify 1
@@ -319,19 +325,6 @@ proc rtl8710_auto_verify {on} {
 		set rtl8710_flasher_auto_verify 0
 		echo "auto verify off"
 	}
-}
-
-proc rtl8710_mass_erase {} {
-	echo "mass erase"
-	rtl8710_flasher_mass_erase
-}
-
-proc rtl8710_flash_read {local_filename loc size} {
-	rtl8710_flasher_read $local_filename $loc $size
-}
-
-proc rtl8710_flash_write {local_filename loc} {
-	rtl8710_flasher_write $local_filename $loc
 }
 
 proc rtl8710_reboot {} {
