@@ -27,7 +27,7 @@ proc rtl8710_flasher_init {} {
 		halt
 		mww [expr {$rtl8710_flasher_buffer + 0x08}] 0x00000000
 		mww [expr {$rtl8710_flasher_buffer + 0x00}] 0x00000001
-		array2mem rtl8710_flasher_code 32 $rtl8710_flasher_firmware_ptr
+		array2mem rtl8710_flasher_code 32 $rtl8710_flasher_firmware_ptr [array size rtl8710_flasher_code]
 		reg faultmask 0x01
 		reg sp 0x20000000
 		reg pc $rtl8710_flasher_firmware_ptr
@@ -38,6 +38,21 @@ proc rtl8710_flasher_init {} {
 		set rtl8710_flasher_ready 1
 	}
 	return ""
+}
+
+proc array2file {a local_filename loc} {
+	echo $a
+	echo [array size a]
+	for {set offset 0} {$offset < [array size a]} {set offset [expr {$offset + 1}]} {
+		append bindata [binary format c $a([expr $offset])]
+	}
+	set fp [open $local_filename "a+"]
+	close $fp
+	set fp [open $local_filename "r+"]
+	fconfigure $fp -translation binary
+	seek $fp $loc
+	puts -nonewline $fp $bindata
+	close $fp
 }
 
 proc rtl8710_flasher_mrw {reg} {
@@ -69,7 +84,6 @@ proc rtl8710_flasher_read_block {offset len} {
 	if {[expr {$status > 0}]} {
 		error "read error, offset $offset"
 	}
-	dump_image /tmp/_flasher.bin [expr {$rtl8710_flasher_buffer + 0x20}] $len
 }
 
 proc rtl8710_flasher_write_block {offset len} {
@@ -152,7 +166,9 @@ proc rtl8710_flash_read {local_filename loc size} {
 		set flash_offset [expr {$loc + $offset}]
 		echo "read offset $flash_offset"
 		rtl8710_flasher_read_block $flash_offset $len
-		exec dd conv=notrunc if=/tmp/_flasher.bin "of=$local_filename" bs=1 "seek=$offset"
+		set a ""
+		mem2array a 8 [expr {$rtl8710_flasher_buffer + 0x20}] $len
+		array2file a $local_filename $offset
 	}
 }
 

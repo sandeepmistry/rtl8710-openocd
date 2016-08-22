@@ -21,6 +21,8 @@ int __attribute__((section(".vectors"))) main(){
 	uint32_t p, i, l;
 	uint8_t read_buffer[16];
 
+	__asm__("cpsid f");
+
 	PERI_ON->PESOC_CLK_CTRL |= PERI_ON_CLK_CTRL_ACTCK_GPIO_EN | PERI_ON_CLK_CTRL_SLPCK_GPIO_EN; // enable gpio peripheral clock
 	PERI_ON->SOC_PERI_FUNC1_EN |= PERI_ON_SOC_PERI_FUNC1_EN_GPIO; // enable gpio peripheral
 
