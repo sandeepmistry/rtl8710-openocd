@@ -36,3 +36,8 @@ openocd -f interface/stlink-v2-1.cfg -f rtl8710.ocd -c "init" -c "reset halt" -c
 ```
 openocd -f interface/stlink-v2-1.cfg -f rtl8710.ocd -c "init" -c "reset halt" -c "rtl8710_flash_auto_erase 1" -c "rtl8710_flash_auto_verify 1" -c "rtl8710_flash_write dump.bin 0" -c "shutdown"
 ```
+## About
+RTL8710 OpenOCD support is created by Rebane (rebane@alkohol.ee)
+
+This document and the attached source code is released under GPLv2.
+

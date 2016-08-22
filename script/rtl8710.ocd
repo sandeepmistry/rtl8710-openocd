@@ -1,5 +1,6 @@
 #
-# script for RTL8710
+# OpenOCD script for RTL8710
+# Copyright (C) 2016 Rebane, rebane@alkohol.ee
 #
 
 source [find target/swj-dp.tcl]

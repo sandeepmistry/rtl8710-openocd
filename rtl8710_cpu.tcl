@@ -1,7 +1,3 @@
-#
-# script for RTL8710
-#
-
 source [find target/swj-dp.tcl]
 
 if { [info exists CHIPNAME] } {
@@ -16,8 +12,6 @@ if { [info exists ENDIAN] } {
 	set _ENDIAN little
 }
 
-# Work-area is a space in RAM used for flash programming
-# By default use 2kB
 if { [info exists WORKAREASIZE] } {
 	set _WORKAREASIZE $WORKAREASIZE
 } else {
@@ -41,8 +35,6 @@ adapter_khz 500
 adapter_nsrst_delay 100
 
 if {![using_hla]} {
-	# if srst is not fitted use SYSRESETREQ to
-	# perform a soft reset
 	cortex_m reset_config sysresetreq
 }
 
