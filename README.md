@@ -26,8 +26,8 @@ compare file (filename) with flash offset (offset)
 ### rtl8710_flash_auto_erase [1/0]
 set auto_erase option on/off. flash pages will be autoerased when writing
 ### rtl8710_flash_auto_verify [1/0]
-set auto_verify on/off. each block of data will be auto verified when writing
-## example:
+set auto_verify option on/off. each block of data will be auto verified when writing
+## examples:
 ```
 openocd -f interface/stlink-v2-1.cfg -f rtl8710.ocd -c "init" -c "reset halt" -c "rtl8710_flash_read_id" -c "rtl8710_flash_read dump.bin 0 1048576" -c "shutdown"
 ```

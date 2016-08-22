@@ -2,13 +2,13 @@
 #include <stdio.h>
 #include "spi_flash.h"
 
-#define MEM_START            (*(volatile uint32_t *)(BUFFER + 0x00))
-#define MEM_COMMAND          (*(volatile uint32_t *)(BUFFER + 0x04))
-#define MEM_STATUS           (*(volatile uint32_t *)(BUFFER + 0x08))
-#define MEM_PARAM            (*(volatile uint32_t *)(BUFFER + 0x0C))
-#define MEM_OFFSET           (*(volatile uint32_t *)(BUFFER + 0x10))
-#define MEM_LEN              (*(volatile uint32_t *)(BUFFER + 0x14))
-#define MEM_DATA             ((volatile uint8_t *)(BUFFER + 0x20))
+#define MEM_START            (*(volatile uint32_t *)(BUFFER_ADDRESS + 0x00))
+#define MEM_COMMAND          (*(volatile uint32_t *)(BUFFER_ADDRESS + 0x04))
+#define MEM_STATUS           (*(volatile uint32_t *)(BUFFER_ADDRESS + 0x08))
+#define MEM_PARAM            (*(volatile uint32_t *)(BUFFER_ADDRESS + 0x0C))
+#define MEM_OFFSET           (*(volatile uint32_t *)(BUFFER_ADDRESS + 0x10))
+#define MEM_LEN              (*(volatile uint32_t *)(BUFFER_ADDRESS + 0x14))
+#define MEM_DATA             ((volatile uint8_t *)(BUFFER_ADDRESS + 0x20))
 
 #define COMMAND_READ_ID      0
 #define COMMAND_MASS_ERASE   1
