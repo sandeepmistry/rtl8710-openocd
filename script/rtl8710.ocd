@@ -114,6 +114,19 @@ set rtl8710_flasher_auto_erase           0
 set rtl8710_flasher_auto_verify          0
 set rtl8710_flasher_auto_erase_sector    0xFFFFFFFF
 
+proc array2file {a local_filename loc} {
+	for {set offset 0} {$offset < [array size a]} {set offset [expr {$offset + 1}]} {
+		append bindata [binary format c $a([expr $offset])]
+	}
+	set fp [open $local_filename "a+"]
+	close $fp
+	set fp [open $local_filename "r+"]
+	fconfigure $fp -translation binary
+	seek $fp $loc
+	puts -nonewline $fp $bindata
+	close $fp
+}
+
 proc rtl8710_flasher_init {} {
 	global rtl8710_flasher_firmware_ptr
 	global rtl8710_flasher_buffer
@@ -136,21 +149,6 @@ proc rtl8710_flasher_init {} {
 		set rtl8710_flasher_ready 1
 	}
 	return ""
-}
-
-proc array2file {a local_filename loc} {
-	echo $a
-	echo [array size a]
-	for {set offset 0} {$offset < [array size a]} {set offset [expr {$offset + 1}]} {
-		append bindata [binary format c $a([expr $offset])]
-	}
-	set fp [open $local_filename "a+"]
-	close $fp
-	set fp [open $local_filename "r+"]
-	fconfigure $fp -translation binary
-	seek $fp $loc
-	puts -nonewline $fp $bindata
-	close $fp
 }
 
 proc rtl8710_flasher_mrw {reg} {
