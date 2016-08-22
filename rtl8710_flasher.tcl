@@ -1,8 +1,3 @@
-set rtl8710_flasher_firmware_ptr         0x10001D00
-set rtl8710_flasher_buffer               0x10008000
-set rtl8710_flasher_buffer_size          262144
-set rtl8710_flasher_sector_size          4096
-
 set rtl8710_flasher_command_read_id      0
 set rtl8710_flasher_command_mass_erase   1
 set rtl8710_flasher_command_sector_erase 2
@@ -16,24 +11,12 @@ set rtl8710_flasher_auto_erase           0
 set rtl8710_flasher_auto_verify          0
 set rtl8710_flasher_auto_erase_sector    0xFFFFFFFF
 
-proc array2file {a local_filename loc} {
-	for {set offset 0} {$offset < [array size a]} {set offset [expr {$offset + 1}]} {
-		append bindata [binary format c $a([expr $offset])]
-	}
-	set fp [open $local_filename "a+"]
-	close $fp
-	set fp [open $local_filename "r+"]
-	fconfigure $fp -translation binary
-	seek $fp $loc
-	puts -nonewline $fp $bindata
-	close $fp
-}
-
 proc rtl8710_flasher_init {} {
 	global rtl8710_flasher_firmware_ptr
 	global rtl8710_flasher_buffer
 	global rtl8710_flasher_capacity
 	global rtl8710_flasher_ready
+	global rtl8710_flasher_code
 
 	if {[expr {$rtl8710_flasher_ready == 0}]} {
 		echo "initializing RTL8710 SPI programmer"
@@ -154,6 +137,7 @@ proc rtl8710_flash_sector_erase {offset} {
 }
 
 proc rtl8710_flash_read {local_filename loc size} {
+	global rtl8710_flasher_buffer
 	global rtl8710_flasher_buffer_size
 	rtl8710_flasher_init
 	for {set offset 0} {$offset < $size} {set offset [expr {$offset + $rtl8710_flasher_buffer_size}]} {
@@ -164,9 +148,8 @@ proc rtl8710_flash_read {local_filename loc size} {
 		set flash_offset [expr {$loc + $offset}]
 		echo "read offset $flash_offset"
 		rtl8710_flasher_read_block $flash_offset $len
-		set a ""
-		mem2array a 8 [expr {$rtl8710_flasher_buffer + 0x20}] $len
-		array2file a $local_filename $offset
+		dump_image /tmp/_rtl8710_flasher.bin [expr {$rtl8710_flasher_buffer + 0x20}] $len
+		exec dd conv=notrunc if=/tmp/_rtl8710_flasher.bin "of=$local_filename" bs=1 "seek=$offset"
 	}
 }
 
@@ -191,7 +174,7 @@ proc rtl8710_flash_write {local_filename loc} {
 				set sector [expr {$i / $rtl8710_flasher_sector_size}]
 				if {[expr {$rtl8710_flasher_auto_erase_sector != $sector}]} {
 					echo "erase sector $sector"
-					rtl8710_flasher_sector_erase [expr {$sector * $rtl8710_flasher_sector_size}]
+					rtl8710_flash_sector_erase [expr {$sector * $rtl8710_flasher_sector_size}]
 					set rtl8710_flasher_auto_erase_sector $sector
 				}
 			}

@@ -24,7 +24,7 @@ write file (filename) to flash offset (offset)
 ### rtl8710_flash_verify [filename] [offset]
 compare file (filename) with flash offset (offset)
 ### rtl8710_flash_auto_erase [1/0]
-set auto_erase option on/off. flash pages will be autoerased when writing
+set auto_erase option on/off. flash sectors will be autoerased when writing
 ### rtl8710_flash_auto_verify [1/0]
 set auto_verify option on/off. each block of data will be auto verified when writing
 ## examples:
