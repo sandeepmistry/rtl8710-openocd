@@ -17,6 +17,7 @@ all:
 	echo "}" >>rtl8710.ocd
 	echo >>rtl8710.ocd
 	cat rtl8710_flasher.ocd >>rtl8710.ocd
+	cp rtl8710.ocd script/rtl8710.ocd
 
 clean:
 	rm -rf rtl8710_flasher.elf rtl8710_flasher.bin make_array rtl8710.ocd
