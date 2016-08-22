@@ -30,7 +30,7 @@ dump:
 	openocd -f interface/stlink-v2-1.cfg -f script/rtl8710.ocd -c "init" -c "reset halt" -c "rtl8710_flash_read_id" -c "rtl8710_flash_read dump.bin 0 1048576" -c "shutdown"
 
 restore:
-	openocd -f interface/stlink-v2-1.cfg -f script/rtl8710.ocd -c "init" -c "reset halt" -c "rtl8710_flash_auto_erase 1" -c "rtl8710_flash_write dump.bin 0" -c shutdown
+	openocd -f interface/stlink-v2-1.cfg -f script/rtl8710.ocd -c "init" -c "reset halt" -c "rtl8710_flash_auto_erase 1" -c "rtl8710_flash_auto_verify 1" -c "rtl8710_flash_write dump.bin 0" -c shutdown
 
 verify:
 	openocd -f interface/stlink-v2-1.cfg -f script/rtl8710.ocd -c "init" -c "reset halt" -c "rtl8710_flash_verify dump.bin 0" -c shutdown

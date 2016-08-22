@@ -11,7 +11,9 @@ OpenOCD support for RTL8710 and integrated flash.
 * TMS:     GE3  
 * TCK:     GE4  
 ## building:
+```
 make
+```
 ## available OpenOCD commands:
 ### rtl8710_flash_read_id
 read and parse the jedec id bytes from flash
