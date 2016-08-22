@@ -19,7 +19,7 @@ proc rtl8710_flasher_init {} {
 	global rtl8710_flasher_code
 
 	if {[expr {$rtl8710_flasher_ready == 0}]} {
-		echo "initializing RTL8710 SPI programmer"
+		echo "initializing RTL8710 flasher"
 		halt
 		mww [expr {$rtl8710_flasher_buffer + 0x08}] 0x00000000
 		mww [expr {$rtl8710_flasher_buffer + 0x00}] 0x00000001
@@ -32,6 +32,7 @@ proc rtl8710_flasher_init {} {
 		set id [rtl8710_flasher_mrw [expr {$rtl8710_flasher_buffer + 0x0C}]]
 		set rtl8710_flasher_capacity [expr {2 ** [expr {($id >> 16) & 0xFF}]}]
 		set rtl8710_flasher_ready 1
+		echo "RTL8710 flasher initialized"
 	}
 	return ""
 }
@@ -112,7 +113,7 @@ proc rtl8710_flash_read_id {} {
 	set manufacturer_id [format "0x%02X" [expr {$id & 0xFF}]]
 	set memory_type [format "0x%02X" [expr {($id >> 8) & 0xFF}]]
 	set memory_capacity [expr {2 ** [expr {($id >> 16) & 0xFF}]}]
-	echo "manufacturer ID: $manufacturer_id, memory type: $memory_type, memory capacity: $memory_capacity byte(s)"
+	echo "manufacturer ID: $manufacturer_id, memory type: $memory_type, memory capacity: $memory_capacity bytes"
 }
 
 proc rtl8710_flash_mass_erase {} {
@@ -150,6 +151,7 @@ proc rtl8710_flash_read {local_filename loc size} {
 		rtl8710_flasher_read_block $flash_offset $len
 		dump_image /tmp/_rtl8710_flasher.bin [expr {$rtl8710_flasher_buffer + 0x20}] $len
 		exec dd conv=notrunc if=/tmp/_rtl8710_flasher.bin "of=$local_filename" bs=1 "seek=$offset"
+		echo "read $len bytes"
 	}
 }
 
@@ -168,6 +170,7 @@ proc rtl8710_flash_write {local_filename loc} {
 			set len $rtl8710_flasher_buffer_size
 		}
 		set flash_offset [expr {$loc + $offset}]
+		echo "write offset $flash_offset"
 		rtl8710_flasher_load_block $local_filename $offset $len
 		if {[expr {$rtl8710_flasher_auto_erase != 0}]} {
 			for {set i $flash_offset} {$i < [expr {$flash_offset + $len}]} {incr i} {
@@ -179,8 +182,8 @@ proc rtl8710_flash_write {local_filename loc} {
 				}
 			}
 		}
-		echo "write offset $flash_offset"
 		rtl8710_flasher_write_block $flash_offset $len
+		echo "wrote $len bytes"
 		if {[expr {$rtl8710_flasher_auto_verify != 0}]} {
 			echo "verify offset $flash_offset"
 			rtl8710_flasher_verify_block $flash_offset $len
@@ -198,6 +201,7 @@ proc rtl8710_flash_verify {local_filename loc} {
 			set len $rtl8710_flasher_buffer_size
 		}
 		set flash_offset [expr {$loc + $offset}]
+		echo "read offset $flash_offset"
 		rtl8710_flasher_load_block $local_filename $offset $len
 		echo "verify offset $flash_offset"
 		rtl8710_flasher_verify_block $flash_offset $len
