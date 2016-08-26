@@ -17,6 +17,8 @@ make
 ## available OpenOCD commands:
 ### rtl8710_flash_read_id
 read and parse the jedec id bytes from flash
+### rtl8710_flash_read_mac
+read MAC address from flash memory at 0xA088
 ### rtl8710_flash_mass_erase
 erase whole flash
 ### rtl8710_flash_read [filename] [offset] [size]
