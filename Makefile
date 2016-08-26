@@ -31,6 +31,9 @@ clean:
 test:
 	openocd -f interface/stlink-v2-1.cfg -f script/rtl8710.ocd -c "init" -c "reset halt" -c "rtl8710_flash_read_id" -c "shutdown"
 
+mac:
+	openocd -f interface/stlink-v2-1.cfg -f script/rtl8710.ocd -c "init" -c "reset halt" -c "rtl8710_flash_read_mac" -c "shutdown"
+
 dump:
 	openocd -f interface/stlink-v2-1.cfg -f script/rtl8710.ocd -c "init" -c "reset halt" -c "rtl8710_flash_read_id" -c "rtl8710_flash_read dump.bin 0 1048576" -c "shutdown"
 

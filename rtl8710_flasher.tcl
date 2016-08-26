@@ -5,6 +5,8 @@ set rtl8710_flasher_command_read         3
 set rtl8710_flasher_command_write        4
 set rtl8710_flasher_command_verify       5
 
+set rtl8710_flasher_mac_address_offset   0xA088
+
 set rtl8710_flasher_ready                0
 set rtl8710_flasher_capacity             0
 set rtl8710_flasher_auto_erase           0
@@ -206,6 +208,23 @@ proc rtl8710_flash_verify {local_filename loc} {
 		echo "verify offset $flash_offset"
 		rtl8710_flasher_verify_block $flash_offset $len
 	}
+}
+
+proc rtl8710_flash_read_mac {} {
+	global rtl8710_flasher_mac_address_offset
+	global rtl8710_flasher_buffer
+	rtl8710_flasher_init
+	rtl8710_flasher_read_block $rtl8710_flasher_mac_address_offset 6
+	set mac ""
+	mem2array mac 8 [expr {$rtl8710_flasher_buffer + 0x20}] 6
+	set res "MAC address: "
+	append res [format %02X $mac(0)]
+	append res ":" [format %02X $mac(1)]
+	append res ":" [format %02X $mac(2)]
+	append res ":" [format %02X $mac(3)]
+	append res ":" [format %02X $mac(4)]
+	append res ":" [format %02X $mac(5)]
+	echo $res
 }
 
 proc rtl8710_flash_auto_erase {on} {
